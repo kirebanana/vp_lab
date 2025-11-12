@@ -1,74 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>Book Reservation - Welcome and choose a Book</title>
-    <style type="text/css">
-        body {
-            width: 800px;
-            margin: auto;
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            margin-top: 20px;
-        }
-        .book-option {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .book-option:hover {
-            background-color: #f5f5f5;
-        }
+    <title>Books</title>
+    <style>
+        body { width: 900px; margin: auto; font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+        .top-actions { margin-top: 12px; display:flex; justify-content: space-between; align-items: center; }
+        .reservation { margin-top: 24px; padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
+        .small { font-size: 0.9em; color:#555; }
+        form.inline { display:inline; }
     </style>
 </head>
 <body>
 <header>
-    <h1>Welcome to our Book Reservation App</h1>
+    <h1>Books</h1>
 </header>
-<main>
-    <form action="/" method="GET" style="margin-bottom: 20px;">
-        <h2>Search Books:</h2>
-
-        <label for="searchText">Book Title:</label>
-        <input type="text" id="searchText" name="searchText">
-
-        <label for="searchRating">Min. Rating:</label>
-        <input type="number" id="searchRating" name="searchRating" min="0" max="5">
-
-        <input type="submit" value="Search">
-    </form>
-
-    <form action="/bookReservation" method="POST">
-        <h2>Choose a book:</h2>
-
-        <div th:each="book, stat : ${books}">
-            <input type="radio"
-                   name="bookTitle"
-                   th:value="${book.title}"
-                   th:id="${'book_' + stat.index}"
-            >
-
-            <label th:for="${'book_' + stat.index}"
-                   th:text="'Title: ' + ${book.title} + ', Genre: ' + ${book.genre} + ', Rating: ' + ${book.averageRating}">
-            </label>
+<div class="top-actions">
+    <div>
+        <form th:action="@{/books}" method="get" style="display:inline">
+            <input type="text" name="searchText" placeholder="Book title..."/>
+            <input type="number" name="searchRating" placeholder="Min rating" step="0.1" min="0" max="5"/>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <div>
+        <a th:href="@{/books/book-form}">+ Add new book</a>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th style="width:35%">Title</th>
+        <th>Genre</th>
+        <th>Rating</th>
+        <th>Author</th>
+        <th style="width:18%">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.title}">Title</td>
+        <td th:text="${book.genre}">Genre</td>
+        <td th:text="${book.averageRating}">Rating</td>
+        <td th:text="${book.author != null ? book.author.name + ' ' + book.author.surname : '—'}">Author</td>
+        <td>
+            <a th:href="@{/books/book-form/{id}(id=${book.id})}">Edit</a>
+            <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" class="inline">
+                <button type="submit" onclick="return confirm('Delete this book?');">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<section class="reservation">
+    <h2>Reserve a book</h2>
+    <form th:action="@{/bookReservation}" method="post">
+        <div th:each="book : ${books}">
+            <div>
+                <input type="radio" name="bookTitle" th:id="${'book_' + book.id}" th:value="${book.title}" required/>
+                <label th:for="${'book_' + book.id}" th:text="${'Title: ' + book.title + ', Genre: ' + book.genre + ', Rating: ' + book.averageRating}"></label>
+            </div>
         </div>
-
-        <h2>Enter your information:</h2>
-        <label>Your Name:</label>
-        <input type="text" name="readerName" required><br/>
-        <label>Your Address:</label>
-        <input type="text" name="readerAddress" required><br/>
-
-        <h2>Choose number of copies:</h2>
-        <input type="number" name="numberOfCopies" min="1" max="10" required><br/>
-        <br/>
-        <input type="submit" value="Reserve Book">
+        <div style="margin-top:10px;">
+            <label class="small">Your name</label>
+            <input type="text" name="readerName" required/>
+        </div>
+        <div style="margin-top:8px;">
+            <label class="small">Your address</label>
+            <input type="text" name="readerAddress" required/>
+        </div>
+        <div style="margin-top:8px;">
+            <label class="small">Number of copies</label>
+            <input type="number" name="numberOfCopies" min="1" max="10" required/>
+        </div>
+        <div style="margin-top:10px;">
+            <button type="submit">Reserve Book</button>
+        </div>
     </form>
-</main>
+</section>
 </body>
 </html>

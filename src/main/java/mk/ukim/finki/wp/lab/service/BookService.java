@@ -6,5 +6,9 @@ import java.util.List;
 
 public interface BookService {
     List<Book> listAll();
-    List<mk.ukim.finki.wp.lab.model.Book> searchBooks(String text, Double rating);
+    List<Book> searchBooks(String text, Double rating);
+    Book findById(Long id);
+    Book save(String title, String genre, Double averageRating, Long authorId);
+    Book edit(Long id, String title, String genre, Double averageRating, Long authorId);
+    void deleteById(Long id);
 }
