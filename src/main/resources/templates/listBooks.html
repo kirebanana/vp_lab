@@ -19,13 +19,16 @@
     <h1>Books</h1>
 </header>
 <div class="top-actions">
-    <div>
-        <form th:action="@{/books}" method="get" style="display:inline">
-            <input type="text" name="searchText" placeholder="Book title..."/>
-            <input type="number" name="searchRating" placeholder="Min rating" step="0.1" min="0" max="5"/>
-            <button type="submit">Search</button>
-        </form>
-    </div>
+    <form th:action="@{/books}" method="get" class="form-inline">
+        <div class="input-group input-group-sm">
+            <input name="searchText" type="text" class="form-control" placeholder="Book title..."/>
+            <input name="searchRating" type="number" class="form-control" placeholder="Min rating" step="0.1" min="0" max="5"/>
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-secondary btn-number"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+
     <div>
         <a th:href="@{/books/book-form}">+ Add new book</a>
     </div>
