@@ -80,4 +80,10 @@ public class BookController {
         this.bookService.deleteById(id);
         return "redirect:/books";
     }
+
+    @GetMapping("/by-author/{authorId}")
+    public String getBooksByAuthor(@PathVariable Long authorId, Model model) {
+        model.addAttribute("books", bookService.listByAuthor(authorId));
+        return "listBooks";
+    }
 }

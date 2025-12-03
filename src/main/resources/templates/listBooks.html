@@ -48,8 +48,13 @@
         <td th:text="${book.title}">Title</td>
         <td th:text="${book.genre}">Genre</td>
         <td th:text="${book.averageRating}">Rating</td>
-        <td th:text="${book.author != null ? book.author.name + ' ' + book.author.surname : '—'}">Author</td>
         <td>
+            <a th:if="${book.author != null}"
+               th:href="@{/books/by-author/{id}(id=${book.author.id})}"
+               th:text="${book.author.name + ' ' + book.author.surname}">
+            </a>
+            <span th:if="${book.author == null}">—</span>
+        </td>        <td>
             <a th:href="@{/books/book-form/{id}(id=${book.id})}">Edit</a>
             <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" class="inline">
                 <button type="submit" onclick="return confirm('Delete this book?');">Delete</button>

@@ -25,30 +25,37 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> searchBooks(String text, Double rating) {
-        return this.bookRepository.searchBooks(text, rating);
-    }
+        return bookRepository.findAllByTitleContainingIgnoreCaseAndAverageRatingGreaterThanEqual(text, rating);    }
 
     @Override
     public Book findById(Long id) {
-        return this.bookRepository.findById(id);
+        return this.bookRepository.findById(id).orElse(null);
     }
 
     @Override
     public Book save(String title, String genre, Double averageRating, Long authorId) {
-        Author author = this.authorRepository.findById(authorId);
-        Book book = new Book(null, title, genre, averageRating, author);
+        Author author = this.authorRepository.findById(authorId).orElse(null);
+        Book book = new Book(title, genre, averageRating, author);
         return this.bookRepository.save(book);
     }
 
     @Override
     public Book edit(Long id, String title, String genre, Double averageRating, Long authorId) {
-        Author author = this.authorRepository.findById(authorId);
-        Book book = new Book(id, title, genre, averageRating, author);
-        return this.bookRepository.save(book);
+        Book book = bookRepository.findById(id).orElseThrow();
+        Author author = authorRepository.findById(authorId).orElse(null);
+        book.setTitle(title);
+        book.setGenre(genre);
+        book.setAverageRating(averageRating);
+        book.setAuthor(author);
+        return bookRepository.save(book);
     }
 
     @Override
     public void deleteById(Long id) {
         this.bookRepository.deleteById(id);
+    }
+    @Override
+    public List<Book> listByAuthor(Long authorId) {
+        return bookRepository.findAllByAuthor_Id(authorId);
     }
 }
