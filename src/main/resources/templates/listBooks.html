@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <title>Books</title>
@@ -17,6 +17,16 @@
 <body>
 <header>
     <h1>Books</h1>
+    <div style="float: right; margin: 10px;">
+        <div sec:authorize="isAuthenticated()">
+            <span>Welcome, <span sec:authentication="name">User</span>!</span>
+            <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()">
+            <a href="/login" class="btn btn-info btn-sm">Login</a>
+        </div>
+    </div>
 </header>
 <div class="top-actions">
     <form th:action="@{/books}" method="get" class="form-inline">
@@ -30,7 +40,7 @@
     </form>
 
     <div>
-        <a th:href="@{/books/book-form}">+ Add new book</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/books/book-form}">+ Add new book</a>
     </div>
 </div>
 <table>
@@ -40,7 +50,7 @@
         <th>Genre</th>
         <th>Rating</th>
         <th>Author</th>
-        <th style="width:18%">Actions</th>
+        <th style="width:18%" sec:authorize="hasRole('ADMIN')">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -54,7 +64,8 @@
                th:text="${book.author.name + ' ' + book.author.surname}">
             </a>
             <span th:if="${book.author == null}">—</span>
-        </td>        <td>
+        </td>
+        <td sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/books/book-form/{id}(id=${book.id})}">Edit</a>
             <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" class="inline">
                 <button type="submit" onclick="return confirm('Delete this book?');">Delete</button>
